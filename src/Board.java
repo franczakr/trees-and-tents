@@ -1,21 +1,19 @@
-import java.util.Arrays;
-
 public class Board {
 
     public int size;
 
-    public int[] tentsH;
-    public int[] tentsV;
+    public int[] tentsLimitVertical;
+    public int[] tentsLimitHorizontal;
 
     public CellType[][] cells;
 
-    public Board(int[] tentsH, int[] tentsV, CellType[][] cells) {
-        this.tentsH = tentsH;
-        this.tentsV = tentsV;
+    public Board(int[] tentsLimitVertical, int[] tentsLimitHorizontal, CellType[][] cells) {
+        this.tentsLimitVertical = tentsLimitVertical;
+        this.tentsLimitHorizontal = tentsLimitHorizontal;
         this.cells = cells;
-        this.size = tentsH.length;
+        this.size = tentsLimitVertical.length;
 
-        if (tentsV.length != size || cells.length != size)
+        if (tentsLimitHorizontal.length != size || cells.length != size)
             throw new IllegalArgumentException("Incorrect input");
         for (int x = 0; x < size; x++) {
             if (cells[x].length != size)
@@ -28,6 +26,6 @@ public class Board {
         for(int i = 0; i<cells.length; i++) {
             clonedCells[i] = cells[i].clone();
         }
-        return new Board(tentsH.clone(), tentsV.clone(), clonedCells);
+        return new Board(tentsLimitVertical.clone(), tentsLimitHorizontal.clone(), clonedCells);
     }
 }

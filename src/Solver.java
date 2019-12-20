@@ -7,7 +7,7 @@ public class Solver {
     }
 
     public Board solve() {
-        grass();
+        grassImpossibleFields();
         return solveFrom(0);
     }
 
@@ -17,11 +17,14 @@ public class Solver {
 
         for (int x = xx; x < board.size; x++) {
             for (int y = 0; y < board.size; y++) {
-                
+
                 if (board.cells[x][y] == CellType.EMPTY) {
                     if (!canPlaceTent(x, y)) {
                         board.cells[x][y] = CellType.GRASS;
                         continue;
+                    }
+                    if (getMaxTentsInHorizontalLine(x, y) < board.tentsLimitHorizontal[y] || getMaxTentsInVerticalLine(x, y) < board.tentsLimitVertical[x]) {
+                        return null;
                     }
 
                     Board board1 = board.copy();
@@ -32,21 +35,45 @@ public class Solver {
                         return result1;
 
                     board.cells[x][y] = CellType.TENT;
-                    board.tentsH[x]--;
-                    board.tentsV[y]--;
+                    board.tentsLimitVertical[x]--;
+                    board.tentsLimitHorizontal[y]--;
                 }
-                
+
             }
-            if(board.tentsH[x] != 0)
+            if (board.tentsLimitVertical[x] != 0)
                 return null;
         }
         return isCorrect() ? board : null;
     }
 
-    private void grass() {
-        for(int x=0; x<board.size; x++) {
-            for(int y=0; y<board.size; y++) {
-                if(board.cells[x][y] == CellType.EMPTY && !canPlaceTent(x,y)) {
+    private int getMaxTentsInHorizontalLine(int from, int line) {
+        int maxTents = 0;
+        while (from < board.size) {
+            if (board.cells[from][line] == CellType.EMPTY && canPlaceTent(from, line)) {
+                maxTents++;
+                from++;
+            }
+            from++;
+        }
+        return maxTents;
+    }
+
+    private int getMaxTentsInVerticalLine(int line, int from) {
+        int maxTents = 0;
+        while (from < board.size) {
+            if (board.cells[line][from] == CellType.EMPTY && canPlaceTent(line, from)) {
+                maxTents++;
+                from++;
+            }
+            from++;
+        }
+        return maxTents;
+    }
+
+    private void grassImpossibleFields() {
+        for (int x = 0; x < board.size; x++) {
+            for (int y = 0; y < board.size; y++) {
+                if (board.cells[x][y] == CellType.EMPTY && !canPlaceTent(x, y)) {
                     board.cells[x][y] = CellType.GRASS;
                 }
             }
@@ -55,7 +82,7 @@ public class Solver {
 
     private boolean isCorrect() {
         for (int x = 0; x < board.size; x++) {
-            if (board.tentsH[x] != 0 || board.tentsV[x] != 0) {
+            if (board.tentsLimitVertical[x] != 0 || board.tentsLimitHorizontal[x] != 0) {
                 return false;
             }
         }
@@ -70,10 +97,10 @@ public class Solver {
     }
 
     private boolean canPlaceTent(int x, int y) {
-        if (x < 0 || y < 0 || x >= board.size || y > board.size || board.cells[x][y] != CellType.EMPTY || IsTentClose(x, y) || !IsTreeClose(x, y))
+        if (x < 0 || y < 0 || x >= board.size || y > board.size || board.cells[x][y] != CellType.EMPTY || IsTentNearTent(x, y) || !IsTreeClose(x, y))
             return false;
 
-        return board.tentsH[x] > 0 && board.tentsV[y] > 0;
+        return board.tentsLimitVertical[x] > 0 && board.tentsLimitHorizontal[y] > 0;
     }
 
     private boolean IsTreeClose(int x, int y) {
@@ -84,7 +111,7 @@ public class Solver {
         return isTentOnPos(x - 1, y) || isTentOnPos(x + 1, y) || isTentOnPos(x, y - 1) || isTentOnPos(x, y + 1);
     }
 
-    private boolean IsTentClose(int x, int y) {
+    private boolean IsTentNearTent(int x, int y) {
         return isTentOnPos(x - 1, y) || isTentOnPos(x + 1, y) || isTentOnPos(x, y - 1) || isTentOnPos(x, y + 1) ||
                 isTentOnPos(x - 1, y - 1) || isTentOnPos(x + 1, y - 1) || isTentOnPos(x - 1, y + 1) || isTentOnPos(x + 1, y + 1);
     }

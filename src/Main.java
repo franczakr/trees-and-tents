@@ -31,7 +31,6 @@ public class Main {
             lines.add(scanner.nextLine().split(" "));
         }
 
-
         CellType[][] cells = parse(lines);
 
         scanner.close();
