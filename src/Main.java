@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Scanner scanner = new Scanner(new File("input.txt"));
+        Scanner scanner = new Scanner(new File("input32x32.txt"));
 
         String[] tentsHList = scanner.nextLine().split(" ");
         int[] tentsH = new int[tentsHList.length];

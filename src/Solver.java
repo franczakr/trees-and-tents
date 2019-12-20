@@ -7,6 +7,7 @@ public class Solver {
     }
 
     public Board solve() {
+        grass();
         return solveFrom(0);
     }
 
@@ -40,6 +41,16 @@ public class Solver {
                 return null;
         }
         return isCorrect() ? board : null;
+    }
+
+    private void grass() {
+        for(int x=0; x<board.size; x++) {
+            for(int y=0; y<board.size; y++) {
+                if(board.cells[x][y] == CellType.EMPTY && !canPlaceTent(x,y)) {
+                    board.cells[x][y] = CellType.GRASS;
+                }
+            }
+        }
     }
 
     private boolean isCorrect() {
